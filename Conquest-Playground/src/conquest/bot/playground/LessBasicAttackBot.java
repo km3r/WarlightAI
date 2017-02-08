@@ -172,17 +172,15 @@ public class LessBasicAttackBot extends GameBot {
 	
 	/** Looks through my regions to find the one with the most armies */
 	private RegionState findArmy() {
+        return findArmy(1).get(0);
+    }
+    private List<RegionState> findArmy(int size);
 		// CLONE REGIONS OWNED BY ME
 		List<RegionState> mine = new ArrayList<RegionState>(state.me.regions.values());
-		
+		Collections.sort(mine);
+        
 		// FIND REGION WITH MOST ARMIES
-		RegionState armyRegion = mine.get(0);
-		for(RegionState rs : mine) {
-			if (rs.armies > armyRegion.armies)
-				armyRegion = rs;
-		}
-		
-		return armyRegion;
+		return mine.subList(0,size);
 	}
 	
 	public static void runInternal() {
