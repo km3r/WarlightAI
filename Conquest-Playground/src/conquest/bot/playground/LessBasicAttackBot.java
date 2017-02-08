@@ -28,19 +28,19 @@ import conquest.game.world.Region;
 import conquest.view.GUI;
 
 /*
- * @Author Logan
+ * @Author Logan and Kyle
  *  Continues to build up one army and then runs it through whatever 
- * territory is not already owned.
+ * territory is not already owned, proritizes capturing its own continents first..
  *  Very fun to watch actually. Play it against StarterBot and enjoy.
  */
 
-public class BasicAttackBot extends GameBot {
+public class LessBasicAttackBot extends GameBot {
 
 	private Region frontline;
 	FightAttackersResults aRes;
 	FightDefendersResults dRes;
 	
-	public BasicAttackBot() {
+	public LessBasicAttackBot() {
 		aRes = FightAttackersResults.loadFromFile(new File("FightSimulation-Attackers-A200-D200.obj"));
 		dRes = FightDefendersResults.loadFromFile(new File("FightSimulation-Defenders-A200-D200.obj"));
 		System.err.println("---==[ BASIC ATTACK BOT INITIALIZED ]==---");
@@ -188,11 +188,11 @@ public class BasicAttackBot extends GameBot {
 	public static void runInternal() {
 		Config config = new Config();
 		
-		config.bot1Init = "internal:conquest.bot.playground.BasicAttackBot";
+		config.bot1Init = "internal:conquest.bot.playground.LessBasicAttackBot";
 		//config.bot1Init = "dir;process:../Conquest-Bots;java -cp ./bin;../Conquest/bin conquest.bot.external.JavaBot conquest.bot.playground.ConquestBot ./ConquestBot.log";
 		
 		config.bot2Init = "internal:conquest.bot.BotStarter";
-		//config.bot2Init = "human";
+	    //config.bot2Init = "human";
 		
 		config.engine.botCommandTimeoutMillis = 24*60*60*1000;
 		//config.engine.botCommandTimeoutMillis = 20 * 1000;
