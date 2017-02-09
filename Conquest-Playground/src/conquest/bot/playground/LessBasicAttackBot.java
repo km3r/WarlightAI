@@ -89,15 +89,9 @@ public class LessBasicAttackBot extends GameBot {
 	public List<PlaceCommand> placeArmies(long timeout) {
 		List<PlaceCommand> result = new ArrayList<PlaceCommand>();
 		
-        List<RegionState> armies = findArmies(2);
-
-        // PLACE ALL ARMIES ONTO REGION WITH MOST ARMIES
-		for(RegionState army: armies)
-            result.add(new PlaceCommand(army.region, state.me.placeArmies/armies.size()));
-		//TODO check remainder
-        int remain = state.me.placeArmies - armies.size() * ((int)(state.me.placeArmies / armies.size())) ;
-        if (remain > 0)
-            result.add(new PlaceCommand(armies.get(0).region, remain);
+		// PLACE ALL ARMIES ONTO REGION WITH MOST ARMIES
+		result.add(new PlaceCommand(findArmy().region, state.me.placeArmies));
+		
 		return result;
 	}
 
@@ -178,9 +172,9 @@ public class LessBasicAttackBot extends GameBot {
 	
 	/** Looks through my regions to find the one with the most armies */
 	private RegionState findArmy() {
-        return findArmies(1).get(0);
+        return findArmy(1).get(0);
     }
-    private List<RegionState> findArmies(int size){
+    private List<RegionState> findArmy(int size);
 		// CLONE REGIONS OWNED BY ME
 		List<RegionState> mine = new ArrayList<RegionState>(state.me.regions.values());
 		Collections.sort(mine);
