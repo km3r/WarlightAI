@@ -105,10 +105,10 @@ public class LessBasicAttackBot extends GameBot {
     @Override
     public List<MoveCommand> moveArmies(long timeout) {
         List<MoveCommand> result = new ArrayList<MoveCommand>();
-        RegionState armyRegion = findArmy();    
+        List<RegionState> armyRegions = findArmy(2);    
+        for (RegionState armyRegion: armyRegions) {
         RegionBFS<BFSNode> bfs = new RegionBFS<BFSNode>();
         boolean attacked = false;
-        
         // ATTACK UNOWNED NEIGHBOR REGION IN SAME TERRITORY IF POSSIBLE
         for (RegionState neighbor : armyRegion.neighbours) {
             if (neighbor.owned(Player.ME) || neighbor.region.continent.id != armyRegion.region.continent.id) continue;
@@ -155,7 +155,7 @@ public class LessBasicAttackBot extends GameBot {
                 result.add(transfer(armyRegion, state.region(moveTo)));
             }
         }
-        
+        }   
         return result;
     }
 
