@@ -176,7 +176,7 @@ public class BasicAttackBot extends GameBot {
 	public static void runInternal() {
 		Config config = new Config();
 		
-		config.bot1Init = "internal:conquest.bot.playground.BasicAttackBot";
+		config.bot1Init = "internal:conquest.bot.playground.LessBasicAttackBot";
 		//config.bot1Init = "dir;process:../Conquest-Bots;java -cp ./bin;../Conquest/bin conquest.bot.external.JavaBot conquest.bot.playground.ConquestBot ./ConquestBot.log";
 		
 		config.bot2Init = "internal:conquest.bot.BotStarter";

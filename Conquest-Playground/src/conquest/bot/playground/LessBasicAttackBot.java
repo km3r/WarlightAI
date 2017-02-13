@@ -121,7 +121,7 @@ public class LessBasicAttackBot extends GameBot {
         // ATTACK UNOWNED NEIGHBOR REGION IF POSSIBLE
         if (!attacked) {
             for (RegionState neighbor : armyRegion.neighbours) {
-                if (neighbor.owned(Player.ME) || neighbor.region.continent.id != armyRegion.region.continent.id)
+                if (neighbor.owned(Player.ME))
                     continue;
 
                 result.add(new MoveCommand(armyRegion.region, neighbor.region, armyRegion.armies - 1 + state.me.placeArmies));
