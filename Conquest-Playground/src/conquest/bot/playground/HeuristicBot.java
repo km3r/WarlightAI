@@ -36,7 +36,12 @@ import conquest.view.GUI;
 public class HeuristicBot extends GameBot 
 {
 	
+	FightAttackersResults aRes;
+	FightDefendersResults dRes;
+	
 	public HeuristicBot() {
+		aRes = FightAttackersResults.loadFromFile(new File("FightSimulation-Attackers-A200-D200.obj"));
+		dRes = FightDefendersResults.loadFromFile(new File("FightSimulation-Defenders-A200-D200.obj"));
 		System.err.println("---==[ AGGRESSIVE BOT INITIALIZED ]==---");
 	}
 	
@@ -74,6 +79,22 @@ public class HeuristicBot extends GameBot
 	
 	private double getPrefferedTerritoryValue(Region region) {
 		double value = 0;
+		value += getContinentBaseValue(region.continent);
+		
+		/* how many neighbors of the same continent can I expand to?
+		 * increase value for neighbors of same continent,
+		 * decrease value for being a neighbor of a different continent.
+		 */
+		for (Region r : region.getNeighbours()) {
+			if (r.continent.equals(region.continent))
+				value++;
+			else
+				value--;
+			
+			//TODO: Possibly consider risk/reward, if another starting point is in the same continent
+		}
+		
+		System.out.println(region.mapName + ": " + value);
 		
 		return getContinentBaseValue(region.continent);
 	}
@@ -83,11 +104,11 @@ public class HeuristicBot extends GameBot
 		double value = 0;
 		
 		switch (continent) {
-		case Australia:     value += 2*BASE_CONTINENT_VALUE ;
+		case Australia:     value += 1*BASE_CONTINENT_VALUE ;
 		case South_America: value += 1.5*BASE_CONTINENT_VALUE;
 		case North_America: value += 1*BASE_CONTINENT_VALUE;
 		case Europe:        value += 0.75*BASE_CONTINENT_VALUE;		
-		case Africa:        value += 0.75*BASE_CONTINENT_VALUE;
+		case Africa:        value += 1*BASE_CONTINENT_VALUE;
 		case Asia:          value += .5*BASE_CONTINENT_VALUE;
 		default:            value += 1*BASE_CONTINENT_VALUE;
 		}
@@ -153,10 +174,12 @@ public class HeuristicBot extends GameBot
 	// =============
 	// MOVING ARMIES
 	// =============
-
 	@Override
 	public List<MoveCommand> moveArmies(long timeout) {
 		List<MoveCommand> result = new ArrayList<MoveCommand>();
+		
+		List<RegionState> targets = new ArrayList<RegionState>(state.me.regions.values());
+		//TODO: sort targets by priority
 		
 		// CAPTURE ALL REGIONS WE CAN
 		for (RegionState from : state.me.regions.values()) {
@@ -165,7 +188,10 @@ public class HeuristicBot extends GameBot
 				if (to.owned(Player.ME)) continue;
 				
 				// IF YOU HAVE ENOUGH ARMY TO WIN WITH 70%
-				// TODO: how to decide an attack
+				if (shouldAttack(from, to, 0.7)) {
+					// => ATTACK
+					result.add(attack(from, to, 0.7));
+				}
 			}
 		}
 		
@@ -184,6 +210,29 @@ public class HeuristicBot extends GameBot
 			if (!region.owned(Player.ME)) return false;
 		}
 		return true;
+	}
+
+	private int getRequiredSoldiersToConquerRegion(RegionState from, RegionState to, double winProbability) {
+		int attackers = from.armies - 1;
+		int defenders = to.armies;
+		
+		for (int a = defenders; a <= attackers; ++a) {
+			double chance = aRes.getAttackersWinChance(a, defenders);
+			if (chance >= winProbability) {
+				return a;
+			}
+		}
+		
+		return Integer.MAX_VALUE;
+	}
+		
+	private boolean shouldAttack(RegionState from, RegionState to, double winProbability) {	
+		return from.armies > getRequiredSoldiersToConquerRegion(from, to, winProbability);
+	}
+	
+	private MoveCommand attack(RegionState from, RegionState to, double winProbability) {
+		MoveCommand result = new MoveCommand(from.region, to.region, getRequiredSoldiersToConquerRegion(from, to, winProbability));
+		return result;
 	}
 	
 	private MoveCommand transfer(RegionState from, RegionState to) {
