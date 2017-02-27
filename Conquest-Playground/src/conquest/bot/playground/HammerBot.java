@@ -1,5 +1,6 @@
 package conquest.bot.playground;
 
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +19,8 @@ import conquest.bot.map.RegionBFS.BFSVisitResultType;
 import conquest.bot.map.RegionBFS.BFSVisitor;
 import conquest.bot.state.ChooseCommand;
 import conquest.bot.state.GameBot;
+import conquest.bot.state.GameState.ContinentState;
+import conquest.bot.state.GameState.PlayerState;
 import conquest.bot.state.GameState.RegionState;
 import conquest.bot.state.MoveCommand;
 import conquest.bot.state.PlaceCommand;
@@ -31,15 +34,17 @@ import conquest.game.world.Region;
 import conquest.view.GUI;
 
 /**
- * 
+ * Copy-paste of {@link AggressiveBot}. Feel free to fool around!
+ * And be sure to check {@link FightSimulation} that provides fight-victory-probabilities for this bot.
  */
-public class HeuristicBot extends GameBot 
+public class HammerBot extends GameBot 
 {
 	
 	FightAttackersResults aRes;
 	FightDefendersResults dRes;
 	
-	public HeuristicBot() {
+	public HammerBot() {
+		// TODO: run {@link FightSimulation} first! 
 		aRes = FightAttackersResults.loadFromFile(new File("FightSimulation-Attackers-A200-D200.obj"));
 		dRes = FightDefendersResults.loadFromFile(new File("FightSimulation-Defenders-A200-D200.obj"));
 		System.err.println("---==[ AGGRESSIVE BOT INITIALIZED ]==---");
@@ -61,7 +66,9 @@ public class HeuristicBot extends GameBot
 		Collections.sort(choosable, new Comparator<Region>() {
 			@Override
 			public int compare(Region o1, Region o2) {
-				return (int) Math.round(getPrefferedTerritoryValue(o2) - getPrefferedTerritoryValue(o1));
+				int priority1 = getPrefferedContinentPriority(o1.continent);
+				int priority2 = getPrefferedContinentPriority(o2.continent);				
+				return priority1 - priority2;
 			}
 		});
 		
@@ -77,45 +84,17 @@ public class HeuristicBot extends GameBot
 		return result;
 	}
 	
-	private double getPrefferedTerritoryValue(Region region) {
-		double value = 0;
-		value += getContinentBaseValue(region.continent);
-		
-		/* how many neighbors of the same continent can I expand to?
-		 * increase value for neighbors of same continent,
-		 * decrease value for being a neighbor of a different continent.
-		 */
-		for (Region r : region.getNeighbours()) {
-			if (r.continent.equals(region.continent))
-				value++;
-			else
-				value--;
-			
-			//TODO: Possibly consider risk/reward, if another starting point is in the same continent
-		}
-		
-		System.out.println(region.mapName + ": " + value);
-		
-		return getContinentBaseValue(region.continent);
-	}
-	
-	private double getContinentBaseValue(Continent continent) {
-		final double BASE_CONTINENT_VALUE = 4;
-		double value = 0;
-		
+	public int getPrefferedContinentPriority(Continent continent) {
 		switch (continent) {
-		case Australia:     value += 1*BASE_CONTINENT_VALUE ;
-		case South_America: value += 1.5*BASE_CONTINENT_VALUE;
-		case North_America: value += 1*BASE_CONTINENT_VALUE;
-		case Europe:        value += 0.75*BASE_CONTINENT_VALUE;		
-		case Africa:        value += 1*BASE_CONTINENT_VALUE;
-		case Asia:          value += .5*BASE_CONTINENT_VALUE;
-		default:            value += 1*BASE_CONTINENT_VALUE;
+		case Australia:     return 1;
+		case South_America: return 2;
+		case North_America: return 3;
+		case Europe:        return 4;		
+		case Africa:        return 5;
+		case Asia:          return 6;
+		default:            return 7;
 		}
-		
-		return value;
 	}
-	
 
 	// ==============
 	// PLACING ARMIES
@@ -174,25 +153,49 @@ public class HeuristicBot extends GameBot
 	// =============
 	// MOVING ARMIES
 	// =============
+
 	@Override
 	public List<MoveCommand> moveArmies(long timeout) {
 		List<MoveCommand> result = new ArrayList<MoveCommand>();
-		
-		List<RegionState> targets = new ArrayList<RegionState>(state.me.regions.values());
-		//TODO: sort targets by priority
-		
+		int x = 0;
 		// CAPTURE ALL REGIONS WE CAN
 		for (RegionState from : state.me.regions.values()) {
 			for (RegionState to : from.neighbours) {
 				// DO NOT ATTACK OWN REGIONS
 				if (to.owned(Player.ME)) continue;
+				//code for one 
+				if(from.region.continent.id == to.region.continent.id) {
+				    x++;
+					System.out.println("Hey:");
+					System.out.println(from.region.continent);
+					
+				// IF YOU HAVE ENOUGH ARMY TO WIN WITH 70%
+				   if (shouldAttack(from, to, 0.7)) {
+					   // => ATTACK
+					   result.add(attack(from, to, 0.7));
+				   }
+			    }
+					
+			}
+			
+		}
+		
+		for (RegionState from : state.me.regions.values()) {
+			for (RegionState to : from.neighbours) {
+				// DO NOT ATTACK OWN REGIONS
+				if (to.owned(Player.ME)) continue;
+				//code for one 
+				if(from.region.continent.id != to.region.continent.id && x == 0) {
 				
 				// IF YOU HAVE ENOUGH ARMY TO WIN WITH 70%
-				if (shouldAttack(from, to, 0.7)) {
-					// => ATTACK
-					result.add(attack(from, to, 0.7));
-				}
+				   if (shouldAttack(from, to, 0.7)) {
+					   // => ATTACK
+					   result.add(attack(from, to, 0.7));
+				   }
+			    }
+					
 			}
+			
 		}
 		
 		// MOVE LEFT OVERS CLOSER TO THE FRONT
@@ -205,6 +208,7 @@ public class HeuristicBot extends GameBot
 		return result;
 	}
 	
+
 	private boolean hasOnlyMyNeighbours(RegionState from) {
 		for (RegionState region : from.neighbours) {			
 			if (!region.owned(Player.ME)) return false;
@@ -282,7 +286,7 @@ public class HeuristicBot extends GameBot
 	public static void runInternal() {
 		Config config = new Config();
 		
-		config.bot1Init = "internal:conquest.bot.playground.HeuristicBot";
+		config.bot1Init = "internal:conquest.bot.playground.HammerBot";
 		//config.bot1Init = "dir;process:../Conquest-Bots;java -cp ./bin;../Conquest/bin conquest.bot.external.JavaBot conquest.bot.playground.ConquestBot ./ConquestBot.log";
 		
 		config.bot2Init = "internal:conquest.bot.BotStarter";
@@ -307,7 +311,7 @@ public class HeuristicBot extends GameBot
 	}
 	
 	public static void runExternal() {
-		BotParser parser = new BotParser(new HeuristicBot());
+		BotParser parser = new BotParser(new ConquestBot());
 		parser.setLogFile(new File("./ConquestBot.log"));
 		parser.run();
 	}
@@ -320,3 +324,4 @@ public class HeuristicBot extends GameBot
 	}
 
 }
+
