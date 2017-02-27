@@ -49,6 +49,7 @@ public class BasicAttackBot extends GameBot {
 
 	@Override
 	public List<ChooseCommand> chooseRegions(List<Region> choosable, long timeout) {
+		
 		int m = 6;
 		
 		// SORT PICKABLE REGIONS ACCORDING TO THE PRIORITY
