@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import conquest.bot.BotParser;
 import conquest.bot.fight.FightSimulation.FightAttackersResults;
 import conquest.bot.fight.FightSimulation.FightDefendersResults;
 import conquest.bot.map.RegionBFS;
@@ -200,8 +201,17 @@ public class BasicAttackBot extends GameBot {
 		System.exit(0);
 	}
 	
+	public static void runExternal() {
+		BotParser parser = new BotParser(new BasicAttackBot());
+		parser.setLogFile(new File("./BasicAttackBot.log"));
+		parser.run();
+	}
+	
+	
+	//__main__
 	public static void main(String[] args)
 	{		
-		runInternal();
+		runExternal();
+		//runInternal();
 	}
 }
