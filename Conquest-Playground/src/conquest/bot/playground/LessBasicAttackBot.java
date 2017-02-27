@@ -28,19 +28,19 @@ import conquest.game.world.Region;
 import conquest.view.GUI;
 
 /*
- * @Author Logan
+ * @Author Logan and Kyle
  *  Continues to build up one army and then runs it through whatever 
- * territory is not already owned.
+ * territory is not already owned, proritizes capturing its own continents first..
  *  Very fun to watch actually. Play it against StarterBot and enjoy.
  */
 
-public class BasicAttackBot extends GameBot {
+public class LessBasicAttackBot extends GameBot {
 
 	private Region frontline;
 	FightAttackersResults aRes;
 	FightDefendersResults dRes;
 	
-	public BasicAttackBot() {
+	public LessBasicAttackBot() {
 		aRes = FightAttackersResults.loadFromFile(new File("FightSimulation-Attackers-A200-D200.obj"));
 		dRes = FightDefendersResults.loadFromFile(new File("FightSimulation-Defenders-A200-D200.obj"));
 		System.err.println("---==[ BASIC ATTACK BOT INITIALIZED ]==---");
@@ -48,7 +48,6 @@ public class BasicAttackBot extends GameBot {
 
 	@Override
 	public List<ChooseCommand> chooseRegions(List<Region> choosable, long timeout) {
-		
 		int m = 6;
 		
 		// SORT PICKABLE REGIONS ACCORDING TO THE PRIORITY
@@ -103,14 +102,26 @@ public class BasicAttackBot extends GameBot {
 		RegionBFS<BFSNode> bfs = new RegionBFS<BFSNode>();
 		boolean attacked = false;
 		
-		// ATTACK UNOWNED NEIGHBOR REGION IF POSSIBLE
+		// ATTACK UNOWNED NEIGHBOR REGION IN SAME TERRITORY IF POSSIBLE
 		for (RegionState neighbor : armyRegion.neighbours) {
-			if (neighbor.owned(Player.ME)) continue;
+			if (neighbor.owned(Player.ME) || neighbor.region.continent.id != armyRegion.region.continent.id) continue;
 			
 			result.add(new MoveCommand(armyRegion.region, neighbor.region, armyRegion.armies - 1 + state.me.placeArmies));
 			attacked = true;
 			break;
 		}
+
+        // ATTACK UNOWNED NEIGHBOR REGION IF POSSIBLE
+        if (!attacked) {
+            for (RegionState neighbor : armyRegion.neighbours) {
+                if (neighbor.owned(Player.ME))
+                    continue;
+
+                result.add(new MoveCommand(armyRegion.region, neighbor.region, armyRegion.armies - 1 + state.me.placeArmies));
+                attacked = true;
+                break;
+            }
+        }
 		
 		// IF I COULDN'T ATTACK, MOVE ARMY TOWARD NEAREST FRONTLINE
 		if (!attacked) {
@@ -181,7 +192,7 @@ public class BasicAttackBot extends GameBot {
 		//config.bot1Init = "dir;process:../Conquest-Bots;java -cp ./bin;../Conquest/bin conquest.bot.external.JavaBot conquest.bot.playground.ConquestBot ./ConquestBot.log";
 		
 		config.bot2Init = "internal:conquest.bot.BotStarter";
-		//config.bot2Init = "human";
+	    //config.bot2Init = "human";
 		
 		config.engine.botCommandTimeoutMillis = 24*60*60*1000;
 		//config.engine.botCommandTimeoutMillis = 20 * 1000;
