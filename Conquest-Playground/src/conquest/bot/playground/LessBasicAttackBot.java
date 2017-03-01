@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import conquest.bot.fight.FightSimulation.FightAttackersResults;
-import conquest.bot.fight.FightSimulation.FightDefendersResults;
+
+import conquest.bot.BotParser;
 import conquest.bot.map.RegionBFS;
 import conquest.bot.map.RegionBFS.BFSNode;
 import conquest.bot.map.RegionBFS.BFSVisitResult;
@@ -37,12 +37,8 @@ import conquest.view.GUI;
 public class LessBasicAttackBot extends GameBot {
 
     private Region frontline;
-    FightAttackersResults aRes;
-    FightDefendersResults dRes;
     
     public LessBasicAttackBot() {
-        aRes = FightAttackersResults.loadFromFile(new File("FightSimulation-Attackers-A200-D200.obj"));
-        dRes = FightDefendersResults.loadFromFile(new File("FightSimulation-Defenders-A200-D200.obj"));
         System.err.println("---==[ BASIC ATTACK BOT INITIALIZED ]==---");
     }
 
@@ -223,7 +219,9 @@ public class LessBasicAttackBot extends GameBot {
     }
     
     public static void main(String[] args)
-    {       
-        runInternal();
+    {   
+	BotParser bot = new BotParser( new LessBasicAttackBot());
+	bot.run();    
+        //runInternal();
     }
 }
