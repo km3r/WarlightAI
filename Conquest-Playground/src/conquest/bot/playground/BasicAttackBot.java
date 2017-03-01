@@ -7,8 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import conquest.bot.BotParser;
-import conquest.bot.fight.FightSimulation.FightAttackersResults;
-import conquest.bot.fight.FightSimulation.FightDefendersResults;
 import conquest.bot.map.RegionBFS;
 import conquest.bot.map.RegionBFS.BFSNode;
 import conquest.bot.map.RegionBFS.BFSVisitResult;
@@ -19,8 +17,8 @@ import conquest.bot.state.GameBot;
 import conquest.bot.state.GameState.RegionState;
 import conquest.bot.state.MoveCommand;
 import conquest.bot.state.PlaceCommand;
-import conquest.engine.RunGame;
 import conquest.engine.Engine.FightMode;
+import conquest.engine.RunGame;
 import conquest.engine.RunGame.Config;
 import conquest.engine.RunGame.GameResult;
 import conquest.game.Player;
@@ -38,18 +36,13 @@ import conquest.view.GUI;
 public class BasicAttackBot extends GameBot {
 
 	private Region frontline;
-	FightAttackersResults aRes;
-	FightDefendersResults dRes;
 	
 	public BasicAttackBot() {
-		aRes = FightAttackersResults.loadFromFile(new File("FightSimulation-Attackers-A200-D200.obj"));
-		dRes = FightDefendersResults.loadFromFile(new File("FightSimulation-Defenders-A200-D200.obj"));
 		System.err.println("---==[ BASIC ATTACK BOT INITIALIZED ]==---");
 	}
 
 	@Override
 	public List<ChooseCommand> chooseRegions(List<Region> choosable, long timeout) {
-		
 		int m = 6;
 		
 		// SORT PICKABLE REGIONS ACCORDING TO THE PRIORITY
@@ -178,7 +171,7 @@ public class BasicAttackBot extends GameBot {
 	public static void runInternal() {
 		Config config = new Config();
 		
-		config.bot1Init = "internal:conquest.bot.playground.LessBasicAttackBot";
+		config.bot1Init = "internal:conquest.bot.playground.BasicAttackBot";
 		//config.bot1Init = "dir;process:../Conquest-Bots;java -cp ./bin;../Conquest/bin conquest.bot.external.JavaBot conquest.bot.playground.ConquestBot ./ConquestBot.log";
 		
 		config.bot2Init = "internal:conquest.bot.BotStarter";
@@ -204,15 +197,14 @@ public class BasicAttackBot extends GameBot {
 	
 	public static void runExternal() {
 		BotParser parser = new BotParser(new BasicAttackBot());
-		parser.setLogFile(new File("./BasicAttackBot.log"));
+		//parser.setLogFile(new File("./BasicAttackBot.log"));
 		parser.run();
 	}
-	
 	
 	//__main__
 	public static void main(String[] args)
 	{		
-		runExternal();
-		//runInternal();
+		//runExternal();
+		runInternal();
 	}
 }
