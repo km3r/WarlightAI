@@ -204,7 +204,7 @@ public class BasicAttackBot extends GameBot {
 	//__main__
 	public static void main(String[] args)
 	{		
-		runExternal();
-		//runInternal();
+		//runExternal();
+		runInternal();
 	}
 }
