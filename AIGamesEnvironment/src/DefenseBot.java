@@ -1,4 +1,4 @@
-package conquest.bot.playground;
+// package conquest.bot.playground;
 
 
 import java.io.File;
@@ -322,7 +322,7 @@ public class DefenseBot extends GameBot
 		// parser.setLogFile(new File("./ConquestBot.log"));
 		parser.run();
 	}
-
+  // __main__n
 	public static void main(String[] args)
 	{
 		//JavaBot.exec(new String[]{"conquest.bot.custom.AggressiveBot", "./AggressiveBot.log"});
