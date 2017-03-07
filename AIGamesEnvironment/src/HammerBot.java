@@ -1,4 +1,4 @@
-package conquest.bot.playground;
+//package conquest.bot.playground;
 
 
 import java.io.File;
@@ -44,8 +44,8 @@ public class HammerBot extends GameBot
 	
 	public HammerBot() {
 		// TODO: run {@link FightSimulation} first! 
-		aRes = FightAttackersResults.loadFromFile(new File("FightSimulation-Attackers-A200-D200.obj"));
-		dRes = FightDefendersResults.loadFromFile(new File("FightSimulation-Defenders-A200-D200.obj"));
+		aRes = FightAttackersResults.loadFromFile(new File("src/FightSimulation-Attackers-A200-D200.obj"));
+		dRes = FightDefendersResults.loadFromFile(new File("src/FightSimulation-Defenders-A200-D200.obj"));
 		System.err.println("---==[ AGGRESSIVE BOT INITIALIZED ]==---");
 	}
 	
@@ -143,9 +143,9 @@ public class HammerBot extends GameBot
 		int result = 0;
 		
 		for (Region reg : o1.region.getNeighbours()) {
-			if(percentOwnedContinent(o1) > 0.50 && percentOwnedContinent(o1) < 1.0)
-				System.out.println("PrimeTime!");
-			result += (percentOwnedContinent(o1) > 0.50 && percentOwnedContinent(o1) < 1.0 ? 1 : 0) * 5;
+			if(percentOwnedContinent(o1) > 0.50 && percentOwnedContinent(o1) < 1.0) {
+			   result += (percentOwnedContinent(o1) > 0.50 && percentOwnedContinent(o1) < 1.0 ? 1 : 0) * 5;
+			}   
 			result += (state.region(reg).owned(Player.NEUTRAL) ? 1 : 0) * 5;
 			result += (state.region(reg).owned(Player.OPPONENT) ? 1 : 0) * 5;
             result += (state.region(reg).owned(Player.OPPONENT) && o1.region.continentBorder ? 1 : 0) * 4;
@@ -164,11 +164,8 @@ public class HammerBot extends GameBot
 				topCont = x;
 			} 
 			x++;
-			
 		} 
 		return 0;
-		
-		
 	}
 	
 	
@@ -183,20 +180,17 @@ public class HammerBot extends GameBot
 		int owned = 0;
         int num = numOfRegionsPerContinent(region);
         List<RegionState> mine = new ArrayList<RegionState>(state.me.regions.values());
-		System.out.println("----------------------");
+		
 		for(Region to: region.region.continent.getRegions())
 		{
 			for(RegionState mee: mine) { 
 			    if(mee.region.id == to.id) {
 			    	owned += 1;
-			    	System.out.println(to.name());
+			    	
 			    }
 			}	
 		}
-		System.out.println("Results: ");
-		System.out.println("Owned: " + owned);
-		System.out.println("Total: " + num);
-		System.out.println("Percent: " + (double)owned/num);
+		
         return (double)owned/num;
     }
 	// =============
@@ -250,7 +244,6 @@ public class HammerBot extends GameBot
 				result.add(moveToFront(from));
 			}
 		}
-		
 		return result;
 	}
 	
