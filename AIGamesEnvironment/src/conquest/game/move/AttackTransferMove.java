@@ -71,7 +71,10 @@ public class AttackTransferMove extends Move {
 	 * @return A string representation of this Move
 	 */
 	public String getString() {
-		if(getIllegalMove().equals(""))
+		//@Logan: I added checks here to make sure these regions aren't null.
+		//	It stops the crash, but the bot tends to get stuck repeating the same 
+		//	the same illegal move.
+		if(getIllegalMove().equals("") && (fromRegion != null) && (toRegion != null))
 			return getPlayerName() + " attack/transfer " + fromRegion.getId() + " " + toRegion.getId() + " " + armies;
 		else
 			return getPlayerName() + " illegal_move " + getIllegalMove();

@@ -144,7 +144,7 @@ public class HammerBot extends GameBot
 		
 		for (Region reg : o1.region.getNeighbours()) {
 			if(percentOwnedContinent(o1) > 0.50 && percentOwnedContinent(o1) < 1.0)
-				System.out.println("PrimeTime!");
+				System.err.println("PrimeTime!");
 			result += (percentOwnedContinent(o1) > 0.50 && percentOwnedContinent(o1) < 1.0 ? 1 : 0) * 5;
 			result += (state.region(reg).owned(Player.NEUTRAL) ? 1 : 0) * 5;
 			result += (state.region(reg).owned(Player.OPPONENT) ? 1 : 0) * 5;
@@ -183,20 +183,20 @@ public class HammerBot extends GameBot
 		int owned = 0;
         int num = numOfRegionsPerContinent(region);
         List<RegionState> mine = new ArrayList<RegionState>(state.me.regions.values());
-		System.out.println("----------------------");
+		System.err.println("----------------------");
 		for(Region to: region.region.continent.getRegions())
 		{
 			for(RegionState mee: mine) { 
 			    if(mee.region.id == to.id) {
 			    	owned += 1;
-			    	System.out.println(to.name());
+			    	System.err.println(to.name());
 			    }
 			}	
 		}
-		System.out.println("Results: ");
-		System.out.println("Owned: " + owned);
-		System.out.println("Total: " + num);
-		System.out.println("Percent: " + (double)owned/num);
+		System.err.println("Results: ");
+		System.err.println("Owned: " + owned);
+		System.err.println("Total: " + num);
+		System.err.println("Percent: " + (double)owned/num);
         return (double)owned/num;
     }
 	// =============

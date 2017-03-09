@@ -34,7 +34,8 @@ import conquest.view.GUI;
  */
 
 public class BasicAttackBot extends GameBot {
-
+	
+	private int roundNum = 0;
 	private Region frontline;
 	
 	public BasicAttackBot() {
@@ -82,6 +83,10 @@ public class BasicAttackBot extends GameBot {
 	@Override
 	// Continue building up the most powerful army
 	public List<PlaceCommand> placeArmies(long timeout) {
+		System.err.println("Round: " + roundNum + " | I believe I have:");
+		for(RegionState rs : state.me.regions.values())
+			System.err.print(rs.toString()+" || ");
+		System.err.println("");
 		List<PlaceCommand> result = new ArrayList<PlaceCommand>();
 		
 		// PLACE ALL ARMIES ONTO REGION WITH MOST ARMIES
@@ -92,6 +97,11 @@ public class BasicAttackBot extends GameBot {
 
 	@Override
 	public List<MoveCommand> moveArmies(long timeout) {
+		System.err.println("Round: " + roundNum + " | I believe I have:");
+		for(RegionState rs : state.me.regions.values())
+			System.err.print(rs.toString()+" || ");
+		System.err.println("");
+		roundNum++;
 		List<MoveCommand> result = new ArrayList<MoveCommand>();
 		RegionState armyRegion = findArmy();	
 		RegionBFS<BFSNode> bfs = new RegionBFS<BFSNode>();
@@ -174,7 +184,7 @@ public class BasicAttackBot extends GameBot {
 		config.bot1Init = "internal:conquest.bot.playground.BasicAttackBot";
 		//config.bot1Init = "dir;process:../Conquest-Bots;java -cp ./bin;../Conquest/bin conquest.bot.external.JavaBot conquest.bot.playground.ConquestBot ./ConquestBot.log";
 		
-		config.bot2Init = "internal:conquest.bot.BotStarter";
+		config.bot2Init = "internal:conquest.bot.playground.HammerBot";
 		//config.bot2Init = "human";
 		
 		config.engine.botCommandTimeoutMillis = 24*60*60*1000;
