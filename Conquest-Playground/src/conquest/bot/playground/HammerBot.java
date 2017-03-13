@@ -183,7 +183,7 @@ public class HammerBot extends GameBot
 		int owned = 0;
         int num = numOfRegionsPerContinent(region);
         List<RegionState> mine = new ArrayList<RegionState>(state.me.regions.values());
-		System.out.println("----------------------");
+		System.err.println("----------------------");
 		for(Region to: region.region.continent.getRegions())
 		{
 			for(RegionState mee: mine) { 
