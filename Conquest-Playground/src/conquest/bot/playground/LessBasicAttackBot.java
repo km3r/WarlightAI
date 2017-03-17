@@ -105,6 +105,7 @@ public class LessBasicAttackBot extends GameBot {
         for (RegionState armyRegion: armyRegions) {
         RegionBFS<BFSNode> bfs = new RegionBFS<BFSNode>();
         boolean attacked = false;
+        
         // ATTACK UNOWNED NEIGHBOR REGION IN SAME TERRITORY IF POSSIBLE
         for (RegionState neighbor : armyRegion.neighbours) {
             if (neighbor.owned(Player.ME) || neighbor.region.continent.id != armyRegion.region.continent.id) continue;
@@ -183,7 +184,7 @@ public class LessBasicAttackBot extends GameBot {
         Collections.sort(mine, new Comparator<RegionState>() {
             @Override
             public int compare(RegionState a, RegionState b) {
-                return a.armies - b.armies;
+                return b.armies - a.armies;
             }
         });
         
@@ -220,8 +221,8 @@ public class LessBasicAttackBot extends GameBot {
     
     public static void main(String[] args)
     {   
-	BotParser bot = new BotParser( new LessBasicAttackBot());
-	bot.run();    
-        //runInternal();
+    	//BotParser bot = new BotParser( new LessBasicAttackBot());
+    	//bot.run();    
+        runInternal();
     }
 }

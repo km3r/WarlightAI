@@ -89,13 +89,13 @@ public class Conquest {
 		//
 		// TEST ARGUMENTS
 		// -- REPLAY
-		//args = new String[]{ "replay.log" };
+		args = new String[]{ "replay.log" };
 		
 		// -- TWO INTERNAL BOTS + visualization + logging replay
 		//args = new String[]{ "100", "5000", "internal:conquest.bot.BotStarter", "internal:conquest.bot.BotStarter", "true", "replay.log" };
 		
 		// -- TWO PROCESS BOTS + visualization + logging replay
-		args = new String[]{ "100", "5000", "process:java -cp bin conquest.bot.BotStarter", "process:java -cp bin conquest.bot.BotStarter", "true", "replay.log" };
+		//nnargs = new String[]{ "100", "5000", "process:java -cp bin conquest.bot.BotStarter", "process:java -cp bin conquest.bot.BotStarter", "true", "replay.log" };
 		
 		if (args == null || (args.length != 1 && args.length != 5 && args.length != 6)) {
 			header();
